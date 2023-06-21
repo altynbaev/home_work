@@ -53,11 +53,9 @@ func Unpack(s string) (string, error) {
 			if !isDigit(prevChar, digitsMap) {
 				output.WriteRune(prevChar)
 			}
-			if i == len(s)-1 {
-				output.WriteRune(chars[i])
-			}
 		}
 	}
+	output.WriteRune(chars[len(s)-1])
 
 	return output.String(), nil
 }
