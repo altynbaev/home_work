@@ -22,10 +22,7 @@ var digitsMap = map[rune]int{
 
 func isDigit(r rune, digits map[rune]int) bool {
 	_, ok := digits[r]
-	if ok {
-		return true
-	}
-	return false
+	return ok
 }
 
 func Unpack(s string) (string, error) {
