@@ -7,29 +7,37 @@ import (
 
 var ErrInvalidString = errors.New("invalid string")
 
+var digitsMap = map[rune]int{
+	'0': 0,
+	'1': 1,
+	'2': 2,
+	'3': 3,
+	'4': 4,
+	'5': 5,
+	'6': 6,
+	'7': 7,
+	'8': 8,
+	'9': 9,
+}
+
+func isDigit(r rune, digits map[rune]int) bool {
+	_, ok := digits[r]
+	if ok {
+		return true
+	}
+	return false
+}
+
 func Unpack(s string) (string, error) {
 	var output strings.Builder
 
 	if len(s) == 0 {
 		return "", nil
 	}
-	digitsMap := map[rune]int{
-		'0': 0,
-		'1': 1,
-		'2': 2,
-		'3': 3,
-		'4': 4,
-		'5': 5,
-		'6': 6,
-		'7': 7,
-		'8': 8,
-		'9': 9,
-	}
 
 	chars := []rune(s)
 
-	_, ok := digitsMap[chars[0]]
-	if ok {
+	if isDigit(chars[0], digitsMap) {
 		return "", ErrInvalidString
 	}
 
@@ -37,8 +45,7 @@ func Unpack(s string) (string, error) {
 		prevChar := chars[i-1]
 		digit, ok := digitsMap[chars[i]]
 		if ok {
-			_, ok := digitsMap[prevChar]
-			if ok {
+			if isDigit(prevChar, digitsMap) {
 				return "", ErrInvalidString
 			}
 			if digit == 0 {
@@ -46,8 +53,7 @@ func Unpack(s string) (string, error) {
 			}
 			output.WriteString(strings.Repeat(string(prevChar), digit))
 		} else {
-			_, ok := digitsMap[prevChar]
-			if !ok {
+			if !isDigit(prevChar, digitsMap) {
 				output.WriteRune(prevChar)
 			}
 			if i == len(s)-1 {
