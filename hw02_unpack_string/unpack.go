@@ -49,10 +49,8 @@ func Unpack(s string) (string, error) {
 				continue
 			}
 			output.WriteString(strings.Repeat(string(prevChar), digit))
-		} else {
-			if !isDigit(prevChar, digitsMap) {
-				output.WriteRune(prevChar)
-			}
+		} else if !isDigit(prevChar, digitsMap) {
+			output.WriteRune(prevChar)
 		}
 	}
 	output.WriteRune(chars[len(s)-1])
