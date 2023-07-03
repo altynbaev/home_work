@@ -9,7 +9,7 @@ func Top10(s string) []string {
 	inputSlice := strings.Fields(s)
 
 	wordsMap := map[string]int{}
-	wordsSlice := make([]string, 0, len(inputSlice))
+	wordsSlice := make([]string, 0, 0)
 
 	for _, word := range inputSlice {
 		wordsMap[word]++
@@ -28,12 +28,13 @@ func Top10(s string) []string {
 		return wordsMap[wordsSlice[i]] > wordsMap[wordsSlice[j]]
 	})
 
-	var sliceLen int
+	sliceLen := 10
 	if len(inputSlice) < 10 {
 		sliceLen = len(wordsSlice)
-	} else {
-		sliceLen = 10
 	}
 
-	return wordsSlice[:sliceLen]
+	outputSlice := make([]string, sliceLen)
+	copy(outputSlice, wordsSlice[:sliceLen])
+
+	return outputSlice
 }
