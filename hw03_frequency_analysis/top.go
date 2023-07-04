@@ -6,14 +6,19 @@ import (
 )
 
 func Top10(s string) []string {
+	if s == "" {
+		return []string{}
+	}
+
 	inputSlice := strings.Fields(s)
 
 	wordsMap := map[string]int{}
-	wordsSlice := make([]string, 0)
 
 	for _, word := range inputSlice {
 		wordsMap[word]++
 	}
+
+	wordsSlice := make([]string, 0, len(wordsMap))
 
 	for word := range wordsMap {
 		wordsSlice = append(wordsSlice, word)
