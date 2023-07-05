@@ -20,8 +20,8 @@ var digitsMap = map[rune]int{
 	'9': 9,
 }
 
-func isDigit(r rune, digits map[rune]int) bool {
-	_, ok := digits[r]
+func isDigit(r rune) bool {
+	_, ok := digitsMap[r]
 	return ok
 }
 
@@ -34,7 +34,7 @@ func Unpack(s string) (string, error) {
 
 	chars := []rune(s)
 
-	if isDigit(chars[0], digitsMap) {
+	if isDigit(chars[0]) {
 		return "", ErrInvalidString
 	}
 
@@ -42,14 +42,14 @@ func Unpack(s string) (string, error) {
 		prevChar := chars[i-1]
 		digit, ok := digitsMap[chars[i]]
 		if ok {
-			if isDigit(prevChar, digitsMap) {
+			if isDigit(prevChar) {
 				return "", ErrInvalidString
 			}
 			if digit == 0 {
 				continue
 			}
 			output.WriteString(strings.Repeat(string(prevChar), digit))
-		} else if !isDigit(prevChar, digitsMap) {
+		} else if !isDigit(prevChar) {
 			output.WriteRune(prevChar)
 		}
 	}
