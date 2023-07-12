@@ -84,15 +84,17 @@ func (list *linkedList) Remove(i *ListItem) { // удалить элемент
 		prev.Next = next // обновляем указатель следующего элемента на предыдущий
 	} else {
 		list.first = next
+		list.first.Prev = nil
 	}
 	if next != nil {
 		next.Prev = prev // обновляем указатель предыдущего элемента на следующий
 	} else {
 		list.last = prev
+		list.last.Next = nil
 	}
 
-	i.Prev = nil
-	i.Next = nil
+	// i.Prev = nil
+	// i.Next = nil
 
 	list.len--
 }
