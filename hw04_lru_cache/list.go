@@ -77,7 +77,6 @@ func (list *linkedList) PushBack(v interface{}) *ListItem { // добавить 
 }
 
 func (list *linkedList) Remove(i *ListItem) { // удалить элемент
-
 	prev := i.Prev // указатель элемента на предыдущий элемент
 	next := i.Next // указатель элемента на следующий элемент
 
