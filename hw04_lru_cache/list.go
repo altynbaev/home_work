@@ -16,25 +16,25 @@ type ListItem struct {
 	Prev  *ListItem // указатель на предыдущий элемент по списку
 }
 
-type linkedList struct {
+type LinkedList struct {
 	len   int
 	first *ListItem // указатель на первый элемент списка
 	last  *ListItem // указатель на последний элемент списка
 }
 
-func (list *linkedList) Len() int { // получить длину списка
+func (list *LinkedList) Len() int { // получить длину списка
 	return list.len
 }
 
-func (list *linkedList) Front() *ListItem { // получить первый элемент списка
+func (list *LinkedList) Front() *ListItem { // получить первый элемент списка
 	return list.first
 }
 
-func (list *linkedList) Back() *ListItem { // получить последний элемент списка
+func (list *LinkedList) Back() *ListItem { // получить последний элемент списка
 	return list.last
 }
 
-func (list *linkedList) PushFront(v interface{}) *ListItem { // добавить значение в начало
+func (list *LinkedList) PushFront(v interface{}) *ListItem { // добавить значение в начало
 	item := ListItem{
 		Value: v,
 	}
@@ -55,7 +55,7 @@ func (list *linkedList) PushFront(v interface{}) *ListItem { // добавить
 	return &item
 }
 
-func (list *linkedList) PushBack(v interface{}) *ListItem { // добавить значение в конец
+func (list *LinkedList) PushBack(v interface{}) *ListItem { // добавить значение в конец
 	item := ListItem{
 		Value: v,
 	}
@@ -76,7 +76,7 @@ func (list *linkedList) PushBack(v interface{}) *ListItem { // добавить 
 	return &item
 }
 
-func (list *linkedList) Remove(i *ListItem) { // удалить элемент
+func (list *LinkedList) Remove(i *ListItem) { // удалить элемент
 	prev := i.Prev // указатель элемента на предыдущий элемент
 	next := i.Next // указатель элемента на следующий элемент
 
@@ -93,17 +93,14 @@ func (list *linkedList) Remove(i *ListItem) { // удалить элемент
 		list.last.Next = nil
 	}
 
-	// i.Prev = nil
-	// i.Next = nil
-
 	list.len--
 }
 
-func (list *linkedList) MoveToFront(i *ListItem) { // переместить элемент в начало
+func (list *LinkedList) MoveToFront(i *ListItem) { // переместить элемент в начало
 	list.Remove(i)
 	list.PushFront(i.Value)
 }
 
-func NewList() List {
-	return new(linkedList)
+func NewList() *LinkedList {
+	return new(LinkedList)
 }
