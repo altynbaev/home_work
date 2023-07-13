@@ -19,25 +19,31 @@ type lruCache struct {
 	items    map[Key]*ListItem
 }
 
+type CacheItem struct {
+	Key   Key
+	Value interface{}
+}
+
 func (cache *lruCache) Set(key Key, value interface{}) bool {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 
+	item := &CacheItem{
+		Key:   key,
+		Value: value,
+	}
+
 	if element, ok := cache.items[key]; ok {
-		cache.items[key].Value = value
+		cache.items[key].Value.(*CacheItem).Value = value
 		cache.queue.MoveToFront(element)
 		return true
 	}
 
-	// Добавление элемента в кэш
-	listItem := cache.queue.PushFront(value)
-	cache.items[key] = listItem
-
+	cache.items[key] = cache.queue.PushFront(item)
 	if cache.queue.Len() > cache.capacity {
-		// Удаляем лишний элемент
 		lastElement := cache.queue.Back()
 		cache.queue.Remove(lastElement)
-		delete(cache.items, key)
+		delete(cache.items, item.Key)
 	}
 
 	return false
@@ -47,10 +53,9 @@ func (cache *lruCache) Get(key Key) (interface{}, bool) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 
-	// Если элемент присутствует в кэше, перемещаем на первое место
 	if element, ok := cache.items[key]; ok {
 		cache.queue.MoveToFront(element)
-		return element.Value, true
+		return element.Value.(*CacheItem).Value, true
 	}
 
 	return nil, false
