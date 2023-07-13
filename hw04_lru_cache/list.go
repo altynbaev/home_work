@@ -73,6 +73,17 @@ func (list *LinkedList) PushBack(v interface{}) *ListItem { // добавить 
 func (list *LinkedList) Remove(i *ListItem) { // удалить элемент
 	prev := i.Prev // указатель элемента на предыдущий элемент
 	next := i.Next // указатель элемента на следующий элемент
+	value := i.Value
+
+	if prev == nil && next == nil {
+		if value == list.first.Value { // принадлежит ли элемент этому списку
+			list.len--
+			list.first = nil
+			list.last = nil
+			return
+		}
+		return
+	}
 
 	if prev != nil {
 		prev.Next = next // обновляем указатель следующего элемента на предыдущий
@@ -98,3 +109,12 @@ func (list *LinkedList) MoveToFront(i *ListItem) { // переместить э�
 func NewList() *LinkedList {
 	return new(LinkedList)
 }
+
+/*
+func main() {
+	l := NewList()
+	l.PushFront(10)
+	front := l.Front()
+	l.Remove(front)
+}
+*/
