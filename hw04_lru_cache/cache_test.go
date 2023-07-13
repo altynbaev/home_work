@@ -20,6 +20,16 @@ func TestCache(t *testing.T) {
 		require.False(t, ok)
 	})
 
+	t.Run("set string value", func(t *testing.T) {
+		c := NewCache(1)
+
+		ok := c.Set("key", "value")
+		ok = c.Set("key", "value")
+
+		_, ok = c.Get("key")
+		require.True(t, ok)
+	})
+
 	t.Run("simple", func(t *testing.T) {
 		c := NewCache(5)
 

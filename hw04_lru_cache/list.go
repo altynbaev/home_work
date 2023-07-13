@@ -109,12 +109,3 @@ func (list *LinkedList) MoveToFront(i *ListItem) { // переместить э�
 func NewList() *LinkedList {
 	return new(LinkedList)
 }
-
-/*
-func main() {
-	l := NewList()
-	l.PushFront(10)
-	front := l.Front()
-	l.Remove(front)
-}
-*/
