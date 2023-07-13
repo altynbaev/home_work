@@ -35,18 +35,15 @@ func (list *LinkedList) Back() *ListItem { // получить последни�
 }
 
 func (list *LinkedList) PushFront(v interface{}) *ListItem { // добавить значение в начало
-	item := ListItem{
+	item := ListItem{ // item.Prev и item.Next будут nil по умолчанию
 		Value: v,
 	}
 
 	if list.len != 0 {
 		item.Next = list.first
-		item.Prev = nil
 		list.first.Prev = &item // обновляем указатель первого элемента на новый элемент
 		list.first = &item      // обновляем указатель списка на первый элемент списка
 	} else {
-		item.Next = nil
-		item.Prev = nil
 		list.first = &item
 		list.last = &item
 	}
@@ -56,18 +53,15 @@ func (list *LinkedList) PushFront(v interface{}) *ListItem { // добавить
 }
 
 func (list *LinkedList) PushBack(v interface{}) *ListItem { // добавить значение в конец
-	item := ListItem{
+	item := ListItem{ // item.Prev и item.Next будут nil по умолчанию
 		Value: v,
 	}
 
 	if list.len != 0 {
-		item.Next = nil
 		item.Prev = list.last
 		list.last.Next = &item // обновляем указатель последнего элемента на новый элемент
 		list.last = &item      // обновляем указатель списка на последний элемент списка
 	} else {
-		item.Next = nil
-		item.Prev = nil
 		list.first = &item
 		list.last = &item
 	}
