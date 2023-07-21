@@ -67,18 +67,12 @@ func Run(tasks []Task, n, m int) error {
 		}
 	}()
 
-	go func() {
-		wgWorkers.Wait()
-		close(chErr)
-	}()
-
+	wgWorkers.Wait()
+	close(chErr)
 	wgTasks.Wait()
 
-	errCount.mu.Lock()
 	if errCount.count >= m {
 		return ErrErrorsLimitExceeded
 	}
-	errCount.mu.Unlock()
-
 	return nil
 }
