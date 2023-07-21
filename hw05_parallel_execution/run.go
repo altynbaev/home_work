@@ -42,10 +42,11 @@ func Run(tasks []Task, n, m int) error {
 				if errCount >= k {
 					return
 				}
-				err := task()
-				if err != nil {
-					chErr <- err
-				}
+				chErr <- task()
+				// err := task()
+				// if err != nil {
+				// 	chErr <- err
+				// }
 			}
 		}()
 	}
