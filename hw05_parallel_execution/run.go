@@ -15,11 +15,9 @@ type errCount struct {
 }
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
-//nolint
 func Run(tasks []Task, n, m int) error {
 	chTasks := make(chan Task)
 	chErr := make(chan error)
-	chStop := make(chan struct{}, 1)
 	errCount := errCount{}
 
 	wgTasks := sync.WaitGroup{}
@@ -28,18 +26,13 @@ func Run(tasks []Task, n, m int) error {
 		defer wgTasks.Done()
 		defer close(chTasks)
 		for _, task := range tasks {
-			select {
-			case <-chStop:
-				return
-			default:
-				errCount.mu.Lock()
-				if errCount.count >= m {
-					errCount.mu.Unlock()
-					return
-				}
+			errCount.mu.Lock()
+			if errCount.count >= m {
 				errCount.mu.Unlock()
-				chTasks <- task
+				return
 			}
+			errCount.mu.Unlock()
+			chTasks <- task
 		}
 	}()
 
@@ -68,10 +61,6 @@ func Run(tasks []Task, n, m int) error {
 				if err != nil {
 					errCount.mu.Lock()
 					errCount.count++
-					if errCount.count == m {
-						chStop <- struct{}{}
-						close(chStop)
-					}
 					errCount.mu.Unlock()
 				}
 			}
