@@ -7,7 +7,7 @@ import (
 
 var ErrErrorsLimitExceeded = errors.New("errors limit exceeded")
 
-var ErrErrorsNilTask = errors.New("a nil task was received")
+var ErrErrorsNilTask = errors.New("a nil task was passed")
 
 type Task func() error
 
@@ -24,6 +24,7 @@ func Run(tasks []Task, n, m int) error {
 
 	chTasks := make(chan Task)
 	errCount := errCount{}
+	nilTasksCount := 0
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
@@ -37,6 +38,10 @@ func Run(tasks []Task, n, m int) error {
 				break
 			}
 			errCount.mu.Unlock()
+			if task == nil {
+				nilTasksCount++
+				break
+			}
 			chTasks <- task
 		}
 	}()
@@ -52,9 +57,6 @@ func Run(tasks []Task, n, m int) error {
 					return
 				}
 				errCount.mu.Unlock()
-				if task == nil {
-					continue
-				}
 				err := task()
 				if err != nil {
 					errCount.mu.Lock()
@@ -66,6 +68,10 @@ func Run(tasks []Task, n, m int) error {
 	}
 
 	wg.Wait()
+
+	if nilTasksCount > 0 {
+		return ErrErrorsNilTask
+	}
 
 	if errCount.count >= m {
 		return ErrErrorsLimitExceeded
