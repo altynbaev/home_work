@@ -17,30 +17,28 @@ type errCount struct {
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
 	chTasks := make(chan Task)
-	chErr := make(chan error)
 	errCount := errCount{}
 
-	wgTasks := sync.WaitGroup{}
-	wgTasks.Add(1)
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	go func() {
-		defer wgTasks.Done()
+		defer wg.Done()
 		defer close(chTasks)
 		for _, task := range tasks {
 			errCount.mu.Lock()
 			if errCount.count >= m {
 				errCount.mu.Unlock()
-				return
+				break
 			}
 			errCount.mu.Unlock()
 			chTasks <- task
 		}
 	}()
 
-	wgWorkers := sync.WaitGroup{}
 	for i := 0; i < n; i++ {
-		wgWorkers.Add(1)
+		wg.Add(1)
 		go func() {
-			defer wgWorkers.Done()
+			defer wg.Done()
 			for task := range chTasks {
 				errCount.mu.Lock()
 				if errCount.count >= m {
@@ -48,28 +46,17 @@ func Run(tasks []Task, n, m int) error {
 					return
 				}
 				errCount.mu.Unlock()
-				chErr <- task()
-			}
-		}()
-	}
-
-	wgTasks.Add(1)
-	go func() {
-		defer wgTasks.Done()
-		if m >= 0 {
-			for err := range chErr {
+				err := task()
 				if err != nil {
 					errCount.mu.Lock()
 					errCount.count++
 					errCount.mu.Unlock()
 				}
 			}
-		}
-	}()
+		}()
+	}
 
-	wgWorkers.Wait()
-	close(chErr)
-	wgTasks.Wait()
+	wg.Wait()
 
 	if errCount.count >= m {
 		return ErrErrorsLimitExceeded
