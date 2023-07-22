@@ -7,6 +7,8 @@ import (
 
 var ErrErrorsLimitExceeded = errors.New("errors limit exceeded")
 
+var ErrErrorsNilTask = errors.New("a nil task was received")
+
 type Task func() error
 
 type errCount struct {
@@ -16,6 +18,10 @@ type errCount struct {
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
+	if len(tasks) == 0 {
+		return nil
+	}
+
 	chTasks := make(chan Task)
 	errCount := errCount{}
 
@@ -46,6 +52,9 @@ func Run(tasks []Task, n, m int) error {
 					return
 				}
 				errCount.mu.Unlock()
+				if task == nil {
+					continue
+				}
 				err := task()
 				if err != nil {
 					errCount.mu.Lock()
