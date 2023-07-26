@@ -34,13 +34,24 @@ func Run(tasks []Task, n, m int) error {
 
 	errCount := errCount{}
 
-	chTasks := make(chan Task, len(tasks))
-	for _, task := range tasks {
-		chTasks <- task
-	}
-	close(chTasks)
+	chTasks := make(chan Task)
 
 	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		defer close(chTasks)
+		for _, task := range tasks {
+			errCount.mu.Lock()
+			if errCount.count >= m {
+				errCount.mu.Unlock()
+				return
+			}
+			errCount.mu.Unlock()
+			chTasks <- task
+		}
+	}()
+
 	for i := 0; i < n; i++ {
 		wg.Add(1)
 		go func() {
@@ -50,10 +61,6 @@ func Run(tasks []Task, n, m int) error {
 				if err != nil {
 					errCount.mu.Lock()
 					errCount.count++
-					if errCount.count >= m {
-						errCount.mu.Unlock()
-						return
-					}
 					errCount.mu.Unlock()
 				}
 			}
