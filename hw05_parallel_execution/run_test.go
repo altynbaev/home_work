@@ -178,8 +178,6 @@ func TestRunConcurrent(t *testing.T) {
 			Run(tasks, workersCount, maxErrorsCount)
 		}()
 
-		time.Sleep(taskSleep)
-
 		// Проверяем что количество запущенных таск в течении работы одной таски достигло количества воркеров
 		require.Eventually(t, func() bool {
 			runningTasks.mu.Lock()
