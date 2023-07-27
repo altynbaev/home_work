@@ -145,10 +145,9 @@ func TestRun(t *testing.T) {
 	t.Run("test concurrent run", func(t *testing.T) {
 		tasksCount := 50
 		tasks := make([]Task, 0, tasksCount)
+		taskSleep := time.Millisecond * time.Duration(100)
 
 		for i := 0; i < tasksCount; i++ {
-			taskSleep := time.Millisecond * time.Duration(rand.Intn(100))
-
 			tasks = append(tasks, func() error {
 				time.Sleep(taskSleep)
 				return nil
@@ -157,9 +156,10 @@ func TestRun(t *testing.T) {
 
 		workersCount := 5
 		maxErrorsCount := 1
+		sumTime := taskSleep * time.Duration(2*tasksCount/workersCount)
 
 		require.Eventually(t, func() bool {
 			return Run(tasks, workersCount, maxErrorsCount) == nil
-		}, time.Second, time.Millisecond, "the tasks were not completed concurrently")
+		}, sumTime, time.Millisecond, "the tasks were not completed concurrently")
 	})
 }

@@ -22,10 +22,6 @@ func Run(tasks []Task, n, m int) error {
 		return nil
 	}
 
-	if m <= 0 {
-		return ErrErrorsLimitExceeded
-	}
-
 	for _, task := range tasks {
 		if task == nil {
 			return ErrErrorsNilTask
