@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -141,14 +142,27 @@ func TestRun(t *testing.T) {
 		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
 		require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "tasks were run sequentially?")
 	})
+}
+
+func TestRunConcurrent(t *testing.T) {
+	defer goleak.VerifyNone(t)
 
 	t.Run("test concurrent run", func(t *testing.T) {
 		tasksCount := 50
 		tasks := make([]Task, 0, tasksCount)
 		taskSleep := time.Millisecond * time.Duration(100)
+		type counter struct {
+			mu    sync.Mutex
+			count int
+		}
+
+		runningTasks := counter{}
 
 		for i := 0; i < tasksCount; i++ {
 			tasks = append(tasks, func() error {
+				runningTasks.mu.Lock()
+				runningTasks.count++
+				runningTasks.mu.Unlock()
 				time.Sleep(taskSleep)
 				return nil
 			})
@@ -156,10 +170,24 @@ func TestRun(t *testing.T) {
 
 		workersCount := 5
 		maxErrorsCount := 1
-		sumTime := taskSleep * time.Duration(2*tasksCount/workersCount)
 
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			Run(tasks, workersCount, maxErrorsCount)
+		}()
+
+		time.Sleep(taskSleep)
+
+		// Проверяем что количество запущенных таск в течении работы одной таски достигло количества воркеров
 		require.Eventually(t, func() bool {
-			return Run(tasks, workersCount, maxErrorsCount) == nil
-		}, sumTime, time.Millisecond, "the tasks were not completed concurrently")
+			runningTasks.mu.Lock()
+			counter := runningTasks.count
+			runningTasks.mu.Unlock()
+			return counter >= workersCount
+		}, taskSleep, time.Millisecond, "the tasks were not completed concurrently")
+
+		wg.Wait()
 	})
 }
