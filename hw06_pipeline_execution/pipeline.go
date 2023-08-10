@@ -36,18 +36,10 @@ func ExecutePipeline(in In, done In, stages ...Stage) Out {
 		return nil
 	}
 
-	pipes := make([]In, 0, n-1)
-	for i := 0; i < n-1; i++ {
-		pipes = append(pipes, make(In))
+	output := stageDone(in, done, stages[0])
+	for i := 1; i < n; i++ {
+		output = stageDone(output, done, stages[i])
 	}
-
-	pipes[0] = stageDone(in, done, stages[0])
-
-	for i := 1; i < n-1; i++ {
-		pipes[i] = stageDone(pipes[i-1], done, stages[i])
-	}
-
-	output := stageDone(pipes[n-2], done, stages[n-1])
 
 	return output
 }
