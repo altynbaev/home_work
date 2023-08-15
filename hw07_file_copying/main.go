@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"log"
+	"strings"
 )
 
 var (
@@ -18,5 +20,16 @@ func init() {
 
 func main() {
 	flag.Parse()
-	// Place your code here.
+
+	if len(strings.TrimSpace(from)) == 0 {
+		log.Fatal("need -from argument, see --help")
+	}
+	if len(strings.TrimSpace(to)) == 0 {
+		log.Fatal("need -to argument, see --help")
+	}
+
+	err := Copy(from, to, offset, limit)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
