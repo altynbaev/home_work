@@ -28,7 +28,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 
 	sourceFileInfo, err := sourceFile.Stat()
 	if err != nil {
-		return err
+		return fmt.Errorf("source file get info error: %w", err)
 	}
 	sourceFileSize := sourceFileInfo.Size()
 	if sourceFileSize <= offset {
@@ -37,7 +37,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	if offset > 0 {
 		_, err = sourceFile.Seek(offset, 0)
 		if err != nil {
-			return err
+			return fmt.Errorf("source file seek error: %w", err)
 		}
 	}
 
@@ -47,7 +47,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 
 	targetFile, err := os.Create(toPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("target file create error: %w", err)
 	}
 	defer func() {
 		err := targetFile.Close()
