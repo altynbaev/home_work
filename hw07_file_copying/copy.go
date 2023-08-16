@@ -22,7 +22,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	defer func() {
 		err := sourceFile.Close()
 		if err != nil {
-			fmt.Println(fmt.Errorf("close source file error: %w", err))
+			fmt.Println(err)
 		}
 	}()
 
@@ -52,7 +52,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	defer func() {
 		err := targetFile.Close()
 		if err != nil {
-			fmt.Println(fmt.Errorf("close target file error: %w", err))
+			fmt.Println(err)
 		}
 	}()
 
