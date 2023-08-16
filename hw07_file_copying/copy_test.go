@@ -93,7 +93,7 @@ func TestCopy(t *testing.T) {
 			if err := Copy(tt.args.fromPath, tt.args.toPath, tt.args.offset, tt.args.limit); (err != nil) != tt.wantErr {
 				t.Errorf("Copy() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			cmp := equalfile.New(nil, equalfile.Options{}) // compare using single mode
+			cmp := equalfile.New(nil, equalfile.Options{})
 			equal, err := cmp.CompareFile(tt.args.toPath, tt.refFile)
 			require.NoError(t, err)
 			assert.True(t, equal)

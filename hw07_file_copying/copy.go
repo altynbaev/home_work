@@ -34,11 +34,16 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	if sourceFileSize <= offset {
 		return ErrOffsetExceedsFileSize
 	}
+
 	if offset > 0 {
 		_, err = sourceFile.Seek(offset, 0)
 		if err != nil {
 			return fmt.Errorf("source file seek error: %w", err)
 		}
+	}
+
+	if (limit == 0) || (limit+offset > sourceFileSize) {
+		limit = sourceFileSize - offset
 	}
 
 	bar := pb.Full.Start64(limit)
@@ -56,17 +61,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		}
 	}()
 
-	if limit != 0 {
-		if limit+offset > sourceFileSize {
-			limit = sourceFileSize - offset
-		}
-		_, err = io.CopyN(targetFile, barReader, limit)
-		if err != nil {
-			return fmt.Errorf("copy file error: %w", err)
-		}
-		return nil
-	}
-	_, err = io.Copy(targetFile, barReader)
+	_, err = io.CopyN(targetFile, barReader, limit)
 	if err != nil {
 		return fmt.Errorf("copy file error: %w", err)
 	}
