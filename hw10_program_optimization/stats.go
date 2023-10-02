@@ -2,7 +2,7 @@ package hw10programoptimization
 
 import (
 	"bufio"
-	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -37,8 +37,8 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 		matched := strings.HasSuffix(user.Email, domain)
 		if matched {
 			emailSlice := strings.SplitN(user.Email, "@", 2)
-			if len(emailSlice) == 1 {
-				return nil, errors.New("ErrInvalidEmail")
+			if len(emailSlice) != 2 {
+				return nil, fmt.Errorf("invalid email: %q", user.Email)
 			}
 			resultString := strings.ToLower(emailSlice[1])
 			result[resultString]++
