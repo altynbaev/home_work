@@ -2,8 +2,8 @@ package hw10programoptimization
 
 import (
 	"bufio"
+	"errors"
 	"io"
-	"regexp"
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
@@ -25,11 +25,6 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 	result := make(DomainStat)
 	var user User
 
-	regExp, err := regexp.Compile("\\." + domain)
-	if err != nil {
-		return result, err
-	}
-
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
 
 	scanner := bufio.NewScanner(r)
@@ -39,14 +34,14 @@ func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
 			return nil, err
 		}
 
-		matched := regExp.MatchString(user.Email)
-		if err != nil {
-			return nil, err
-		}
+		matched := strings.HasSuffix(user.Email, domain)
 		if matched {
-			num := result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])]
-			num++
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])] = num
+			emailSlice := strings.SplitN(user.Email, "@", 2)
+			if len(emailSlice) == 1 {
+				return nil, errors.New("ErrInvalidEmail")
+			}
+			resultString := strings.ToLower(emailSlice[1])
+			result[resultString]++
 		}
 	}
 	return result, nil
