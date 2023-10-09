@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-func FileExists(fileName string) bool {
-	if _, err := os.Stat(fileName); errors.Is(err, os.ErrNotExist) {
+func dirExists(dir string) bool {
+	if _, err := os.Stat(dir); errors.Is(err, os.ErrNotExist) {
 		return false
 	}
 	return true
@@ -19,7 +19,7 @@ func main() {
 	if envDir == "" {
 		log.Fatalf("Empty path")
 	}
-	if !FileExists(envDir) {
+	if !dirExists(envDir) {
 		log.Fatal("Directory does not exists or not enough permissions")
 	}
 	env, err := ReadDir(envDir)
