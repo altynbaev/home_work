@@ -16,11 +16,11 @@ var timeoutError = "Timeout while connecting to server"
 
 var sTimeout string
 
+var wg *sync.WaitGroup
+
 func init() {
 	flag.StringVar(&sTimeout, "timeout", "10s", "enter connection timeout")
 }
-
-var wg *sync.WaitGroup
 
 func main() {
 	flag.Parse()
@@ -37,13 +37,6 @@ func main() {
 		log.Fatal("Please enter correct timeout value")
 	}
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGINT)
-	go func() {
-		<-c
-		os.Exit(1)
-	}()
-
 	client := NewTelnetClient(net.JoinHostPort(host, port), timeout, os.Stdin, os.Stdout)
 
 	err = client.Connect()
@@ -51,6 +44,14 @@ func main() {
 		log.Fatal(timeoutError)
 	}
 	fmt.Fprintf(os.Stderr, "...Connected to %v\n", net.JoinHostPort(host, port))
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGINT)
+	go func() {
+		<-c
+		log.Println("Shutdown")
+		client.Close()
+	}()
 
 	wg = &sync.WaitGroup{}
 	wg.Add(2)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"time"
@@ -36,10 +37,16 @@ func (c *client) Connect() (err error) {
 }
 
 func (c *client) Close() error {
+	if c.connection == nil {
+		return fmt.Errorf("connection error")
+	}
 	return c.connection.Close()
 }
 
 func (c *client) Send() (err error) {
+	if c.connection == nil {
+		return fmt.Errorf("connection error")
+	}
 	_, err = io.Copy(c.connection, c.in)
 	if err != nil {
 		return err
@@ -48,6 +55,9 @@ func (c *client) Send() (err error) {
 }
 
 func (c *client) Receive() (err error) {
+	if c.connection == nil {
+		return fmt.Errorf("connection error")
+	}
 	_, err = io.Copy(c.out, c.connection)
 	if err != nil {
 		return err
