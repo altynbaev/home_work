@@ -1,3 +1,5 @@
 module github.com/altynbaev/home_work/hw12_13_14_15_calendar
 
 go 1.19
+
+require github.com/caarlos0/env/v11 v11.1.0

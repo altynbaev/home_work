@@ -1,17 +1,9 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/app"
-	"github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/logger"
-	internalhttp "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/fixme_my_friend/hw12_13_14_15_calendar/internal/storage/memory"
+	//"github.com/altynbaev/home_work/hw12_13_14_15_calendar/internal/app"
+	//"github.com/altynbaev/home_work/hw12_13_14_15_calendar/internal/calendar"
 )
 
 var configFile string
@@ -20,6 +12,7 @@ func init() {
 	flag.StringVar(&configFile, "config", "/etc/calendar/config.toml", "Path to configuration file")
 }
 
+/*
 func main() {
 	flag.Parse()
 
@@ -59,3 +52,4 @@ func main() {
 		os.Exit(1) //nolint:gocritic
 	}
 }
+*/
